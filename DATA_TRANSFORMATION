@@ -1,0 +1,49 @@
+//12 MONTHS LEADS DATA TO MASTER_LEADS
+let
+    Source = Table.Combine({#"Aug-24 (2)", #"Apr-24 (2)", #"Dec-24 (2)", #"Feb-24 (2)", #"Jan-24 (2)", #"Jul-24 (2)", #"Jun-24 (2)", #"Mar-24 (2)", #"May-24 (2)", #"Nov-24 (2)", #"Oct-24 (2)", #"Sep-24 (2)"}),
+    #"Trimmed Text" = Table.TransformColumns(Source,{{"Record Id", Text.Trim, type text}}),
+    #"Cleaned Text" = Table.TransformColumns(#"Trimmed Text",{{"Record Id", Text.Clean, type text}}),
+    #"Extracted Date" = Table.TransformColumns(#"Cleaned Text",{{"Created Time", DateTime.Date, type date}}),
+    #"Changed Type" = Table.TransformColumnTypes(#"Extracted Date",{{"Phone", type text}}),
+    #"Extracted Date1" = Table.TransformColumns(#"Changed Type",{{"Modified Time", DateTime.Date, type date}}),
+    #"Changed Type1" = Table.TransformColumnTypes(#"Extracted Date1",{{"Mobile", type text}}),
+    #"Extracted Date2" = Table.TransformColumns(#"Changed Type1",{}),
+    #"Changed Type2" = Table.TransformColumnTypes(#"Extracted Date2",{{"AlternateNo", type text}}),
+    #"Replaced Errors" = Table.ReplaceErrorValues(#"Changed Type2", {{"AlternateNo", null}}),
+    #"Changed Type3" = Table.TransformColumnTypes(#"Replaced Errors",{{"Lead Record ID", type text}}),
+    #"Extracted Date3" = Table.TransformColumns(#"Changed Type3",{{"AM Updated On", DateTime.Date, type date}, {"Lead Assigned Date", DateTime.Date, type date}, {"DOS Appointment Date", DateTime.Date, type date}, {"Final Call Status Date", DateTime.Date, type date}, {"Re Assigned Date", DateTime.Date, type date}}),
+    #"Trimmed Text1" = Table.TransformColumns(Table.TransformColumnTypes(#"Extracted Date3", {{"utm_campaign", type text}}, "en-IN"),{{"Account Manager", Text.Trim, type text}, {"Country of Residence", Text.Trim, type text}, {"Lead Owner", Text.Trim, type text}, {"Calculated Age", Text.Trim, type text}, {"Full Name", Text.Trim, type text}, {"Final Call Status", Text.Trim, type text}, {"Occupation", Text.Trim, type text}, {"Email", Text.Trim, type text}, {"Education", Text.Trim, type text}, {"Lead Source", Text.Trim, type text}, {"utm_campaign", Text.Trim, type text}, {"utm_medium", Text.Trim, type text}, {"utm_source", Text.Trim, type text}, {"Education- Market", Text.Trim, type text}}),
+    #"Cleaned Text1" = Table.TransformColumns(#"Trimmed Text1",{{"Account Manager", Text.Clean, type text}, {"Country of Residence", Text.Clean, type text}, {"Lead Owner", Text.Clean, type text}, {"Calculated Age", Text.Clean, type text}, {"Full Name", Text.Clean, type text}, {"Final Call Status", Text.Clean, type text}, {"Occupation", Text.Clean, type text}, {"Email", Text.Clean, type text}, {"Education", Text.Clean, type text}, {"Lead Source", Text.Clean, type text}, {"utm_campaign", Text.Clean, type text}, {"utm_medium", Text.Clean, type text}, {"utm_source", Text.Clean, type text}, {"Education- Market", Text.Clean, type text}}),
+    #"Replaced Errors1" = Table.ReplaceErrorValues(#"Cleaned Text1", {{"Phone", "0"}}),
+    #"Replaced Errors2" = Table.ReplaceErrorValues(#"Replaced Errors1", {{"Mobile", "0"}}),
+    #"Trimmed Text2" = Table.TransformColumns(#"Replaced Errors2",{{"Record Id", Text.Trim, type text}}),
+    #"Cleaned Text2" = Table.TransformColumns(#"Trimmed Text2",{{"Record Id", Text.Clean, type text}})
+in
+    #"Cleaned Text2"
+//12 MONTHS SALES DATA TO MASTER_SALES
+let
+    Source = Table.Combine({#"May-24", #"Jan-24", #"Apr-24", #"Aug-24", #"Dec-24", #"Feb-24", #"Jul-24", #"Mar-24", #"Jun-24", #"Nov-24", #"Oct-24", #"Sep-24", #"May-24"}),
+    #"Extracted Date" = Table.TransformColumns(Source,{{"Modified Time", DateTime.Date, type date}}),
+    #"Trimmed Text" = Table.TransformColumns(#"Extracted Date",{{"Record Id", Text.Trim, type text}, {"Full Name", Text.Trim, type text}}),
+    #"Cleaned Text" = Table.TransformColumns(#"Trimmed Text",{{"Full Name", Text.Clean, type text}, {"Record Id", Text.Clean, type text}}),
+    #"Extracted Date1" = Table.TransformColumns(#"Cleaned Text",{{"Created Time", DateTime.Date, type date}, {"Lead Created Time", DateTime.Date, type date}, {"AM Updated On", DateTime.Date, type date}}),
+    #"Added Conditional Column" = Table.AddColumn(#"Extracted Date1", "Custom", each if [#"IELTS."] = """yes""" then """yes""" else if [#"IELTS."] = """no""" then """no""" else null),
+    #"Removed Columns" = Table.RemoveColumns(#"Added Conditional Column",{"Custom"}),
+    #"Added Conditional Column1" = Table.AddColumn(#"Removed Columns", "IELTS_YES_NO", each if [#"IELTS."] = """YES""" then """YES""" else if [#"IELTS."] = """NO""" then """NO""" else null),
+    #"Removed Columns1" = Table.RemoveColumns(#"Added Conditional Column1",{"IELTS_YES_NO"}),
+    #"Added Conditional Column2" = Table.AddColumn(#"Removed Columns1", "Custom", each if [#"IELTS."] = "YES" then "YES" else if [#"IELTS."] = "NO" then "NO" else null),
+    #"Inserted Date" = Table.AddColumn(#"Added Conditional Column2", "Date", each DateTime.Date([DOS Appointment form]), type date),
+    #"Changed Type" = Table.TransformColumnTypes(#"Inserted Date",{{"CRS.", Int64.Type}, {"Phone", type text}}),
+    #"Trimmed Text1" = Table.TransformColumns(Table.TransformColumnTypes(#"Changed Type", {{"Education", type text}, {"utm_campaign", type text}, {"House No/Name", type text}}, "en-IN"),{{"Account Manager", Text.Trim, type text}, {"Full Name", Text.Trim, type text}, {"Country of Residence", Text.Trim, type text}, {"Education", Text.Trim, type text}, {"Occupation", Text.Trim, type text}, {"Email", Text.Trim, type text}, {"Lead Source", Text.Trim, type text}, {"Contact Owner", Text.Trim, type text}, {"Lead Type", Text.Trim, type text}, {"Lead Purpose", Text.Trim, type text}, {"First Name", Text.Trim, type text}, {"Last Name", Text.Trim, type text}, {"utm_source", Text.Trim, type text}, {"utm_campaign", Text.Trim, type text}, {"Final Call Status (EE)", Text.Trim, type text}, {"State", Text.Trim, type text}, {"House No/Name", Text.Trim, type text}, {"City", Text.Trim, type text}}),
+    #"Cleaned Text1" = Table.TransformColumns(#"Trimmed Text1",{{"Account Manager", Text.Clean, type text}, {"Full Name", Text.Clean, type text}, {"Country of Residence", Text.Clean, type text}, {"Education", Text.Clean, type text}, {"Occupation", Text.Clean, type text}, {"Email", Text.Clean, type text}, {"Lead Source", Text.Clean, type text}, {"Contact Owner", Text.Clean, type text}, {"Lead Type", Text.Clean, type text}, {"Lead Purpose", Text.Clean, type text}, {"First Name", Text.Clean, type text}, {"Last Name", Text.Clean, type text}, {"utm_source", Text.Clean, type text}, {"utm_campaign", Text.Clean, type text}, {"Final Call Status (EE)", Text.Clean, type text}, {"State", Text.Clean, type text}, {"House No/Name", Text.Clean, type text}, {"City", Text.Clean, type text}}),
+    #"Changed Type1" = Table.TransformColumnTypes(#"Cleaned Text1",{{"Occupation_", type text}}),
+    #"Extracted Date2" = Table.TransformColumns(#"Changed Type1",{{"DOS Appointment form", DateTime.Date, type date}}),
+    #"Changed Type2" = Table.TransformColumnTypes(#"Extracted Date2",{{"Mobile", type text}}),
+    #"Trimmed Text2" = Table.TransformColumns(#"Changed Type2",{{"Record Id", Text.Trim, type text}}),
+    #"Cleaned Text2" = Table.TransformColumns(#"Trimmed Text2",{{"Record Id", Text.Clean, type text}}),
+    #"Replaced Value" = Table.ReplaceValue(#"Cleaned Text2","US$","USD",Replacer.ReplaceText,{"Income Band"}),
+    #"Replaced Value1" = Table.ReplaceValue(#"Replaced Value","501-1000 USD","500-1000 USD",Replacer.ReplaceText,{"Income Band"}),
+    #"Replaced Value2" = Table.ReplaceValue(#"Replaced Value1","1501-2000 USD","1500-2000 USD",Replacer.ReplaceText,{"Income Band"}),
+    #"Replaced Value3" = Table.ReplaceValue(#"Replaced Value2","1001-1500 USD","1000-1500 USD",Replacer.ReplaceText,{"Income Band"})
+in
+    #"Replaced Value3"
