@@ -8,8 +8,8 @@ This project analyzes a full year of CRM data (January - December 2024) to track
 I used **Power BI** to transform 24 separate monthly datasets into a single, interactive dashboard. This allows the business to see exactly where sales are growing and where leads are dropping off in real-time.
 
 ### 🛠️ What’s Inside?
-* **[2024_Sales_Analysis_Report.pdf](Dashboard of imigration sales):** A full breakdown of my findings and the "Why" behind the data.
-* **[Data_Transformation.m](Screenshot 2026-03-01 011242):** The M-Language code I wrote to automate the data cleaning (ETL) process.
+* **[2024_Sales_Analysis_Report.pdf](Dashboard of imigration sales.pdf):** A full breakdown of my findings and the "Why" behind the data.
+* **[Data_Transformation.m](Screenshot 2026-03-01 011242.jpg):** The M-Language code I wrote to automate the data cleaning (ETL) process.
 * **Dashboard Screenshots:** Visual proof of the final analysis (see below).
 
 ### 📈 Key Insights
